@@ -20,7 +20,7 @@ class App(customtkinter.CTk):
 
         self.title("Mr. Visualizer")
         self.geometry(f"{App.WIDTH}x{App.HEIGHT}")
-        self.protocol("WM_DELETE_WINDOW", self.on_closing)  
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
         
         self.grid_columnconfigure(0)
         self.grid_rowconfigure(1, weight=1)
@@ -34,7 +34,7 @@ class App(customtkinter.CTk):
         self.frame_control.grid(row=0, column=0, sticky="nswe")
 
 
-        self.slider_1 = customtkinter.CTkSlider(master=self.frame_control, from_=1, to=20)
+        self.slider_1 = customtkinter.CTkSlider(master=self.frame_control, from_=10, to=50)
         self.slider_1.place(relx = 0.15, rely = 0.5, anchor = tk.CENTER)
         self.slider_1.set(0)
 
@@ -138,28 +138,23 @@ class App(customtkinter.CTk):
         cnum = "(" + str(x) + " + " + str(y) + "*I)"
         expr = expr.replace("z", cnum)
         return complex(N(expr))
-
-    def init(self):
-        self.line.set_data([],[])
-    
-        return self.line
     
     def animateZW(self):
+        self.fig.clear()
+        self.ax.axes.clear()
+        self.ax = self.fig.add_subplot(111)
+        self.toolbar.update()
+
         if self.entry.get() == "":
             raise Exception("pls enter a different function\n           i'm trying my hardest :,( ")
-        
-        for i in range(int(self.slider_1.get())):
 
-            self.fig.clear()
-            self.ax.axes.clear()
-            self.ax = self.fig.add_subplot(111)
-            self.toolbar.update()
-            x = np.linspace(-10,10,int(self.slider_1.get()))
-            y = np.linspace(-10,10,int(self.slider_1.get()))
-            for num in x:
-                for anothernum in y:
-                    q = self.getW(num,anothernum)
-                    matplotlib.pyplot.scatter(q.real, q.imag, marker = ".", c = "#11b5e4")
+        x = np.linspace(-10,10,int(self.slider_1.get()))
+        y = np.linspace(-10,10,int(self.slider_1.get()))
+
+        for num in x:
+            for anothernum in y:
+                q = self.getW(num,anothernum)
+                self.ax.plot([q.real], [q.imag], 'r.', markersize=1, markeredgecolor="red", markerfacecolor="red")
         
-            matplotlib.pyplot.show()
-        
+        self.canvas.get_tk_widget().pack(anchor = tk.CENTER)
+        self.canvas.draw() 
